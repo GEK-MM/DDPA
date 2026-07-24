@@ -32,10 +32,6 @@ from thop import profile
 
 mpl.use('Agg')
 
-
-# conda activate pytorch_310
-# cd /home/ubuntu/glk/code/private-code/any_try/InferSeg/Lab2
-#21:81.94
 def get_args():
     parser = argparse.ArgumentParser(description='Dataloader test')
     parser.add_argument('--gpu', default='2', help='gpu id')
