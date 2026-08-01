@@ -391,7 +391,7 @@ class Main_Branch(nn.Module):
         f0, f1, f2, f3 = feats
         target_text = text_embeds[:, 0, :, :].mean(dim=1, keepdim=True)
         constrain_text = text_embeds[:, 1, :, :]
-        ## DSA block
+        ##************   DSA block 1   ******************
         # S3 阶段
         v3_c_raw, _ = self.c_interact_s3(f3, constrain_text, text_mask)
         g3_c = self.grid_gen_c3(v3_c_raw)
@@ -401,6 +401,7 @@ class Main_Branch(nn.Module):
         v3_t = v3_t_raw + v3_t_raw * (g3_t * self.gate_t3(g3_t))
         v3_final = self.drop(self.v3_selector(v3_t, v3_c))
 
+        ##************   DSA block 2   ******************
         # S2 阶段
         f2_injected = self.drop(self.inj_3to2(f2, v3_final))
         v2_c_raw, _ = self.c_interact_s2(f2_injected, constrain_text, text_mask)
@@ -411,13 +412,14 @@ class Main_Branch(nn.Module):
         v2_t = v2_t_raw + v2_t_raw * (g2_t * self.gate_t2(g2_t))
         v2_final = self.drop(self.v2_selector(v2_t, v2_c))
 
+        ##************   BR block    ******************
         # S1 阶段
         f1_injected = self.drop(self.inj_2to1(f1, v2_final))
         v1_t_raw, t1_t = self.t_interact_s1(f1_injected, target_text, text_mask)
         g1_t = self.grid_gen_t1(v1_t_raw)
         v1_t = v1_t_raw + v1_t_raw * (g1_t * self.gate_t1(g1_t))
 
-        ##BR block
+        ##************   Upsample+Conv   ******************
         # S0 阶段增强
         v1_t_up = F.interpolate(v1_t, size=f0.shape[2:], mode='bilinear', align_corners=False)
         f0_refined = self.s0_aspp(f0)  # 预过滤底层噪声

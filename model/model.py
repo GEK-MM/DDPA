@@ -15,7 +15,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
+##********** Decoder ***********
 class ScaleAdaptiveHead(nn.Module):
     def __init__(self, in_channels=[128, 256, 512, 1024], embedding_dim=512, target_size=(512, 512), dropout=0.1):
         super().__init__()
