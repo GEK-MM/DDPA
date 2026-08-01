@@ -121,7 +121,7 @@ class ASPP(nn.Module):
         # 拼接并投影
         return self.project(torch.cat(res, dim=1))
 
-
+## GIM
 class GatedInjection(nn.Module):
     """跨尺度特征门控注入（轻量版）"""
 
@@ -143,6 +143,7 @@ class GatedInjection(nn.Module):
         return low_feat * gate + high_feat_up * (1 - gate)
 
 
+## CSM
 class ChannelSelector(nn.Module):
     """多模态特征通道动态筛选器"""
 
@@ -227,7 +228,7 @@ class GroupASPP(nn.Module):
 
 
 # ==========================================
-# 2. 核心交互模块 (Co-Attention)
+# 2. 核心交互模块 BCI
 # ==========================================
 
 class Co_Attention(nn.Module):
@@ -390,7 +391,7 @@ class Main_Branch(nn.Module):
         f0, f1, f2, f3 = feats
         target_text = text_embeds[:, 0, :, :].mean(dim=1, keepdim=True)
         constrain_text = text_embeds[:, 1, :, :]
-
+        ## DSA block
         # S3 阶段
         v3_c_raw, _ = self.c_interact_s3(f3, constrain_text, text_mask)
         g3_c = self.grid_gen_c3(v3_c_raw)
@@ -416,6 +417,7 @@ class Main_Branch(nn.Module):
         g1_t = self.grid_gen_t1(v1_t_raw)
         v1_t = v1_t_raw + v1_t_raw * (g1_t * self.gate_t1(g1_t))
 
+        ##BR block
         # S0 阶段增强
         v1_t_up = F.interpolate(v1_t, size=f0.shape[2:], mode='bilinear', align_corners=False)
         f0_refined = self.s0_aspp(f0)  # 预过滤底层噪声

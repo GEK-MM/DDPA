@@ -71,9 +71,6 @@ class ScaleAdaptiveHead(nn.Module):
 
 
 class GatedFusionBlock(nn.Module):
-    """
-    核心改进：不再盲目 cat，而是学习一个权衡权重
-    """
 
     def __init__(self, dim):
         super().__init__()

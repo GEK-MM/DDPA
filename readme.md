@@ -15,7 +15,7 @@
 
 ## 数据集准备
 
-从以下仓库下载对应数据集：
+从以下工作的代码仓库中下载对应数据集：
 
 | 数据集 | 下载地址 |
 |--------|----------|
@@ -138,10 +138,10 @@ nlp = spacy.load("en_core_web_md")
 
 若 `en_core_web_md` 安装失败，可尝试从 [Release en_core_web_md-3.8.0](https://github.com/explosion/spacy-models/releases/tag/en_core_web_md-3.8.0) 手动下载。
 
-## DDPA 预训练权重
+## DDPA 训练权重
+
 https://drive.google.com/drive/folders/1uvHtp1qmwrKdg_gGJT2m4ULbqQuuhjZm?usp=drive_link
 
----
 
 ## 训练
 

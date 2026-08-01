@@ -431,11 +431,10 @@ def train_epoch(rank, args, train_loader, model, optimizer, epoch, scaler, logge
             # DDPA 模型输出
             mask_out = model(imgs, word_id, word_mask)
 
-            # 计算损失 (根据你的 criterion 结构适配)
-            # 假设 criterion 返回 total_loss, ce_loss, dice_loss
+            # 计算损失
             loss, ce_loss, dice_loss = criterion(mask_out, seg_map, epoch)
 
-            # 3. 计算训练 IoU (使用新版函数，解包三个值)
+            # 3. 计算训练 IoU
             # 训练阶段主要关注 mIoU 作为趋势参考
             _, _, ious = compute_batch_iou(mask_out, seg_map)
             current_miou = ious.mean().item()

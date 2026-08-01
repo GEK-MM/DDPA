@@ -24,8 +24,7 @@ def Prepare_Model(args, rank, logger):
     rest_param = [p for n, p in model_without_ddp.named_parameters() if p.requires_grad
                   and not n.startswith('visual') and not n.startswith('bert')]
 
-    # 1. 调大学习率基数，去掉复杂的判断
-    # 2. 这里的 lr 直接用你验证过的 3e-5
+
     optimizer = torch.optim.AdamW([
         {'params': rest_param, 'lr': args.lr},  # 新模块 3e-5
         {'params': visu_param, 'lr': args.lr},  # Swin 稍微降一点，给 1.5e-5

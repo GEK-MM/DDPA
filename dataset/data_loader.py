@@ -68,7 +68,7 @@ noun_words = {'marking', 'sidewalk', 'building'}
 direction_words = {'left', 'right', 'top', 'bottom', 'front', 'back'}
 VALID_START_TAGS = {'N', 'D', 'J', 'R', 'M'}
 
-#******************* SSDM *************
+#******************* SSDM *******************
 def split_by_verb_prep_custom(text):
     text = ' '.join(text.split())
     sub_texts = [s.strip() for s in text.split(',')]
@@ -132,7 +132,6 @@ class ReferDataset(data.Dataset):
         self.ref_ids = self.refer.getRefIds(split=self.split)
         img_ids = self.refer.getImgIds(self.ref_ids)
 
-        # 这里的 mask 逻辑如果是业务需要则保留，如果是增强则可以根据需求决定是否删除
         num_images_to_mask = int(len(self.ref_ids) * 0.2)
         self.images_to_mask = random.sample(self.ref_ids, num_images_to_mask)
 
@@ -142,8 +141,6 @@ class ReferDataset(data.Dataset):
         self.tokenizer = AutoTokenizer.from_pretrained(args.bert_tokenizer)
         self.eval_mode = eval_mode
         self.split_num = 2
-
-        # --- 修改处：移除所有数据增强，仅保留 Tensor 转换 ---
         self.base_transform = A.Compose([
             ToTensorV2()
         ], additional_targets={'mask': 'mask'})
@@ -224,7 +221,7 @@ class ReferDataset(data.Dataset):
             attention_mask = torch.cat(attn_masks, dim=-1)
             return img_tensor, target_tensor, tensor_embeddings, attention_mask
         else:
-            # 训练模式：随机选一个句子，不进行增强
+            # 训练模式：随机选一个句子
             raw = np.random.choice([s['raw'] for s in ref_sentences])
             tensor_embeddings, attention_mask = self.process_sentence(raw)
             return img_tensor, target_tensor, tensor_embeddings, attention_mask
@@ -278,7 +275,6 @@ def _load_txt_file(txt_file):
 class SegmentationDataset(data.Dataset):
     """
     分割数据集，包含图像、分割掩码和文本描述
-    已移除 Rotate, GaussianBlur, CoarseDropout 等数据增强
     """
 
     def __init__(self, args, split, txt_file, image_dir, mask_dir, image_transforms=None, target_transforms=None,
@@ -294,7 +290,7 @@ class SegmentationDataset(data.Dataset):
         self.target_transform = target_transforms
         self.split = split
 
-        # 只保留基础的张量转换，去掉所有增强操作
+        # 只保留基础的张量转换
         self.base_transform = A.Compose([
             ToTensorV2()
         ], additional_targets={'mask': 'mask'})
